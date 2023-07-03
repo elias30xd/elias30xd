@@ -1,0 +1,138 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Enunciado_1
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        //definir un arreglo en string 
+        public string[] g_palabras;
+
+        //Botón de registro de palabra, nos permite ingresar la palabra como un string, convertirla en caracteres 
+        //dentro de un array
+        private void btnIngresar_Click(object sender, EventArgs e)
+        {
+            // Obtener la palabra ingresada por el usuario
+            string g_palabra = txtPalabra.Text;
+
+            if (string.IsNullOrEmpty(g_palabra))
+            {
+                MessageBox.Show("Ingresa una palabra", "Casillero vacío");
+            }
+            else
+            {
+                //Convertimos en arreglo de caracteres a la palabra ingresada
+                g_palabras = g_palabra.Select(x => x.ToString()).ToArray();
+                
+                txtPalabra.Clear();
+
+            }
+        }
+
+        //Botón para ordenar los caracteres de las palabras
+        private void btnOrdAsc_Click(object sender, EventArgs e)
+        {
+            //Si el arreglo está vacío, mostrará error
+            try
+            {
+                if (g_palabras == null || g_palabras.Length == 0)
+                {
+                    throw new Exception("No se ingresó la palabra");
+                }
+                else
+                {
+                    //Ordenará el arreglo con recursividad
+                    Ordenar(0);
+
+                    //Insertar el arreglo ordenado en el label con el metodo string.join
+                    lblOrdenar.Text = string.Join("", g_palabras);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No se ha ingresado la palabra");
+            }
+        }
+
+        //Ordena el arreglo con la recursividad
+        private void Ordenar(int indice)
+        {
+            //verifica que el índice no sea mayor que la cantidad de palabras - 1 para que no se pase
+            if (indice < g_palabras.Length - 1)
+            {
+                for (int i = indice + 1; i < g_palabras.Length; i++)
+                {
+                    //usando el método .Compare, comparamos las palabras en la posición del índice con las siguientes 
+                    //posiciones
+                    if (string.Compare(g_palabras[indice], g_palabras[i]) > 0)
+                    {
+                        //conla varible temporal temp, almacenamos el valor del índice y cambiamos el orden
+                        
+                        string temp = g_palabras[indice];
+                        g_palabras[indice] = g_palabras[i];
+                        g_palabras[i] = temp;
+                    }
+                }
+
+                //volvemos a llamar a la función para que siga ordenando los caracteres del arreglo
+                
+                Ordenar(indice + 1);
+            }
+        }
+
+        //Botón para desordenar el arreglo
+        private void btnDesordenar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (g_palabras == null || g_palabras.Length == 0)
+                {
+                    throw new Exception("No se ingresó la palabra");
+                }
+                else
+                {
+                    //Desordenar el arreglo
+                    Desordenar(g_palabras);
+
+                    //Insertar el arreglo desordenado en el label con el metodo string.join
+                    lblDesordenar.Text = string.Join("", g_palabras);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No se ha ingresado la palabra");
+            }
+        }
+
+        //Desordenaremos el arreglo con el algoritmo de Fisher-Yates o algoritmo de mezcla aleatoria
+        private void Desordenar(string[] arreglo)
+        {
+            
+            Random random = new Random();
+
+            //bucle for que recorre el arreglo
+            for (int i = arreglo.Length - 1; i > 0; i--)
+            {
+                //genera un número aleatorio entre 0 y i+1, este número será un orden aleatorio
+                int j = random.Next(0, i + 1);
+
+                //Luego, intercambiamos dos caracteres en los ordenes aleatorios
+                string temp = arreglo[i];
+                arreglo[i] = arreglo[j];
+                arreglo[j] = temp;
+            }
+        }
+    }
+}
